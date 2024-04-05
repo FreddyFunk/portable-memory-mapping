@@ -41,10 +41,10 @@ MemoryMapped::MemoryMapped()
   _filesize   (0),
   _hint       (Normal),
   _mappedBytes(0),
-  _file       (0),
 #ifdef _WIN32
   _mappedFile (NULL),
 #endif
+  _file       (0),
   _mappedView (NULL)
 {
 }
@@ -56,10 +56,10 @@ MemoryMapped::MemoryMapped(const std::string& filename, size_t mappedBytes, Cach
   _filesize   (0),
   _hint       (hint),
   _mappedBytes(mappedBytes),
-  _file       (0),
 #ifdef _WIN32
   _mappedFile (NULL),
 #endif
+  _file       (0),
   _mappedView (NULL)
 {
   open(filename, mappedBytes, hint);
