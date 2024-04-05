@@ -10,7 +10,7 @@
 #include <cstdio>
 
 // OS-specific
-#ifdef _MSC_VER
+#ifdef _WIN32
 // Windows
 #include <windows.h>
 #else
@@ -41,10 +41,10 @@ MemoryMapped::MemoryMapped()
   _filesize   (0),
   _hint       (Normal),
   _mappedBytes(0),
-  _file       (0),
-#ifdef _MSC_VER
+#ifdef _WIN32
   _mappedFile (NULL),
 #endif
+  _file       (0),
   _mappedView (NULL)
 {
 }
@@ -56,10 +56,10 @@ MemoryMapped::MemoryMapped(const std::string& filename, size_t mappedBytes, Cach
   _filesize   (0),
   _hint       (hint),
   _mappedBytes(mappedBytes),
-  _file       (0),
-#ifdef _MSC_VER
+#ifdef _WIN32
   _mappedFile (NULL),
 #endif
+  _file       (0),
   _mappedView (NULL)
 {
   open(filename, mappedBytes, hint);
@@ -83,12 +83,12 @@ bool MemoryMapped::open(const std::string& filename, size_t mappedBytes, CacheHi
   _file       = 0;
   _filesize   = 0;
   _hint       = hint;
-#ifdef _MSC_VER
+#ifdef _WIN32
   _mappedFile = NULL;
 #endif
   _mappedView = NULL;
 
-#ifdef _MSC_VER
+#ifdef _WIN32
   // Windows
 
   DWORD winHint = 0;
@@ -157,7 +157,7 @@ void MemoryMapped::close()
   // kill pointer
   if (_mappedView)
   {
-#ifdef _MSC_VER
+#ifdef _WIN32
     ::UnmapViewOfFile(_mappedView);
 #else
     ::munmap(_mappedView, _filesize);
@@ -165,7 +165,7 @@ void MemoryMapped::close()
     _mappedView = NULL;
   }
 
-#ifdef _MSC_VER
+#ifdef _WIN32
   if (_mappedFile)
   {
     ::CloseHandle(_mappedFile);
@@ -176,7 +176,7 @@ void MemoryMapped::close()
   // close underlying file
   if (_file)
   {
-#ifdef _MSC_VER
+#ifdef _WIN32
     ::CloseHandle(_file);
 #else
     ::close(_file);
@@ -248,7 +248,7 @@ bool MemoryMapped::remap(uint64_t offset, size_t mappedBytes)
   // close old mapping
   if (_mappedView)
   {
-#ifdef _MSC_VER
+#ifdef _WIN32
     ::UnmapViewOfFile(_mappedView);
 #else
     ::munmap(_mappedView, _mappedBytes);
@@ -262,7 +262,7 @@ bool MemoryMapped::remap(uint64_t offset, size_t mappedBytes)
   if (offset + mappedBytes > _filesize)
     mappedBytes = size_t(_filesize - offset);
 
-#ifdef _MSC_VER
+#ifdef _WIN32
   // Windows
 
   DWORD offsetLow  = DWORD(offset & 0xFFFFFFFF);
@@ -323,7 +323,7 @@ bool MemoryMapped::remap(uint64_t offset, size_t mappedBytes)
 /// get OS page size (for remap)
 int MemoryMapped::getpagesize()
 {
-#ifdef _MSC_VER
+#ifdef _WIN32
   SYSTEM_INFO sysInfo;
   GetSystemInfo(&sysInfo);
   return sysInfo.dwAllocationGranularity;
